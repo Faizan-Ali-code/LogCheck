@@ -1,0 +1,19 @@
+# Python environment and caches (setup_venv.bat rebuilds .venv)
+.venv/
+__pycache__/
+*.py[cod]
+
+# Your settings: Default.xls holds your log path and DB String
+Default.xls
+
+# App log and reports
+Applogs/
+*.xlsx
+
+# Third-party JDBC driver - download it yourself (see lib/README.txt)
+lib/*.jar
+
+# Local build metadata
+BUILD_INFO.txt
+.autologger-prod
+requirements-dev.txt

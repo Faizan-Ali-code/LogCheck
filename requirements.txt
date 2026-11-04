@@ -1,0 +1,7 @@
+# Runtime dependencies (shipped with the prod version). Pinned for reproducible installs.
+xlrd==2.0.2            # read Default.xls (BIFF .xls) - replaces Apache POI HSSF
+openpyxl==3.1.5        # write .xlsx reports - replaces Apache POI XSSF
+cryptography==50.0.2   # AES/ECB/PKCS5 DB password decryption
+requests==2.34.2       # OpenAI Responses API calls
+JPype1==1.7.1          # Java bridge for the Informix JDBC driver (lib/jdbc-4.10.12.jar)
+PySide6-Essentials==6.12.0  # GUI (QtWidgets only, no WebEngine) - replaces JavaFX
