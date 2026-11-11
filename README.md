@@ -6,7 +6,7 @@ Scans application log files for sensitive data that should never be logged: card
 
 - 11 built-in detectors, each switched on or off in `Default.xls`
 - Card numbers are Luhn-checked and can be verified against a card database (BIN list over JDBC)
-- Optional AI verification (OpenAI) to cut false positives
+- Optional AI triage of findings (OpenAI), off by default; detected values are masked before anything is sent (see [Data handling](#data-handling))
 - Parallel scanning; very large log files are split automatically
 - GUI with start, pause, resume and stop, or a command-line mode
 
@@ -19,7 +19,7 @@ flowchart TD
     C --> D[Run detectors in parallel]
     D --> E[Card numbers: Luhn + optional DB check]
     E --> F{AI enabled?}
-    F -- yes --> G[OpenAI confirms each finding]
+    F -- yes --> G[Mask values, then OpenAI triages each finding]
     F -- no --> H
     G --> H([Excel reports next to each log file])
 ```
@@ -48,7 +48,14 @@ In `Default.xls`, set `Logs Folder Path` and mark the detectors you want with `Y
 2. Run `Encrypt-Password.bat` and put the result after `;password=` in the `DB String` of `Default.xls`.
 3. Set `AUTOLOGGER_BIN_QUERY` to a query that returns your card BINs.
 
-**AI verification (optional):** set `openai.enabled=true` in `openai-config.properties` and the `OPENAI_API_KEY` environment variable.
+**AI triage (optional, off by default):** set `openai.enabled=true` in `openai-config.properties` and the `OPENAI_API_KEY` environment variable. Read [Data handling](#data-handling) first and check that your organisation allows log excerpts to be sent to an external service.
+
+## Data handling
+
+- Everything runs locally. Nothing leaves the machine unless AI triage is switched on.
+- With AI triage on, card-number findings and findings on DEBUG/TRACE lines are never sent. For every other finding, the request contains the detector name, the detected value **reduced to its format** (`Hunter2!` becomes `Aaaaaa9*`, `123-45-6789` becomes `999-99-9999`) and the evidence window with every value-like part masked the same way (`key=value` pairs, digit runs, long tokens). Key names and ordinary words stay, because the verdict depends on them. See `autologger/ai/redaction.py` and `tests/test_ai_redaction.py`.
+- The AI verdict is a triage aid only. Its effect on false positives has not been measured yet, so review findings yourself.
+- The local Excel reports contain the real values they found: store them as securely as the logs themselves.
 
 ## Output
 

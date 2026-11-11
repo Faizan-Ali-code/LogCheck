@@ -5,10 +5,13 @@ exact cache; template cache (volatile numbers/tokens replaced); then type
 cooldown / open circuit / budget -> AI_UNAVAILABLE (cached for the run);
 otherwise one Responses API call with retries.
 
-Fixes vs Java: the request payload (it contains the evidence) is never logged,
-and concurrent identical requests wait for one in-flight call instead of
-holding a map lock during HTTP. With legacy_compat=False the verdict is read
-from the response's output text instead of a substring search of the raw JSON.
+Data handling: the detected value and the evidence window are masked by
+``redaction`` inside ``build_payload`` before any request is built, so the
+secret itself never leaves the machine (see redaction.py). The request payload
+is never logged, and concurrent identical requests wait for one in-flight call
+instead of holding a map lock during HTTP. With legacy_compat=False the verdict
+is read from the response's output text instead of a substring search of the
+raw JSON.
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from autologger import constants as C
+from autologger.ai.redaction import redact_evidence, shape
 from autologger.config.openai_config import OpenAIConfig, load_openai_config
 from autologger.jcompat import java_trim
 from autologger.scan.patterns import OPENAI_NORMALIZERS_JAVA, compile_java
@@ -29,6 +33,8 @@ from autologger.scan.patterns import OPENAI_NORMALIZERS_JAVA, compile_java
 log = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = ("Security evidence validator. Return only CONFIRMED or NOT_CONFIRMED. Require clear evidence. "
+                 "Values are masked to their format (digit=9, letter=a/A, symbol=*); judge from key names, "
+                 "format and surrounding text. "
                  "Partial match in larger value=NOT_CONFIRMED. Wrong category=NOT_CONFIRMED. "
                  "Unclear evidence=NOT_CONFIRMED.")
 
@@ -98,7 +104,10 @@ def json_escape(s: str | None) -> str:
 
 
 def build_payload(model: str, type_key: str, match: str, evidence: str, include_temperature: bool) -> str:
-    user = "C=" + java_trim(type_key or "") + "\nM=" + java_trim(match or "") + "\nE=" + java_trim(evidence or "")
+    """Request body for one finding. The match and evidence are masked here, so no caller can send them raw."""
+    masked_match = shape(java_trim(match or ""))
+    masked_evidence = redact_evidence(match, java_trim(evidence or ""))
+    user = "C=" + java_trim(type_key or "") + "\nM=" + masked_match + "\nE=" + masked_evidence
     body = ('{"model":"' + json_escape(model) + '","input":[{"role":"system","content":"'
             + json_escape(SYSTEM_PROMPT) + '"},{"role":"user","content":"' + json_escape(user) + '"}]')
     if include_temperature:
