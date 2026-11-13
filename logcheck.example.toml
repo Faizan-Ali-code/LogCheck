@@ -1,0 +1,44 @@
+# LogCheck settings. Every value below is the built-in default; copy this file, keep the lines you
+# change, and pass it with:  logcheck scan <logs> --config logcheck.toml
+# Command-line options override the file.
+
+[scan]
+# File name patterns scanned inside folders (files named on the command line are always scanned).
+include = ["*.log", "*.log.*", "*.txt", "*.out", "*.err", "*.json", "*.gz"]
+# File name or relative path patterns to skip, e.g. ["*.debug.log", "archive/*"].
+exclude = []
+# Parallel processes; 0 = one per CPU, 1 = scan in this process.
+workers = 0
+# Characters of evidence shown either side of a finding (values inside it are masked).
+context_chars = 60
+# Drop findings below this confidence: "low", "medium" or "high".
+min_confidence = "low"
+
+[detectors]
+# Run only these detector ids (empty = all). List them with:  logcheck detectors
+enable = []
+# Detector ids to skip, e.g. ["card-expiry", "date-of-birth"].
+disable = []
+
+[cards]
+# Optional: your issuer BIN prefixes (6-11 digits), one per line or first CSV column.
+bin_list = ""
+# Optional: HMAC-SHA256 digests of your real card numbers, made with `logcheck hash-pans`.
+# Needs the LOGCHECK_PAN_HASH_KEY environment variable used to make them.
+pan_hashes = ""
+
+[report]
+# Any of "csv", "json", "xlsx" (Excel needs the openpyxl package).
+formats = ["csv", "json", "xlsx"]
+# Empty = ./logcheck-report-<date>-<time>. Keep reports outside the folders you scan.
+output_dir = ""
+# true writes the raw detected values into the reports. They are then as sensitive as the logs.
+include_values = false
+
+[ai]
+# Experimental second opinion from an OpenAI model on masked findings (card data is never sent).
+# Needs the OPENAI_API_KEY environment variable. Its accuracy has not been measured.
+enabled = false
+model = "gpt-4.1-mini"
+max_calls = 50
+endpoint = "https://api.openai.com/v1/chat/completions"

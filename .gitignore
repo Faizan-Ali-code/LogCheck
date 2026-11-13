@@ -1,19 +1,25 @@
-# Python environment and caches (setup_venv.bat rebuilds .venv)
+# Python environment and caches
 .venv/
 __pycache__/
 *.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
 
-# Your settings: Default.xls holds your log path and DB String
-Default.xls
-
-# App log and reports
-Applogs/
+# Reports contain (masked) findings from real logs; keep them out of the repository
+logcheck-report-*/
 *.xlsx
 
-# Third-party JDBC driver - download it yourself (see lib/README.txt)
-lib/*.jar
+# Your own settings and card lists
+logcheck.toml
+*.bins
+*.pan-hashes
 
-# Local build metadata
-BUILD_INFO.txt
+# Local files left over from version 1 (not part of this version)
+autologger/
+Applogs/
+lib/
+Default.xls
 .autologger-prod
-requirements-dev.txt
+BUILD_INFO.txt

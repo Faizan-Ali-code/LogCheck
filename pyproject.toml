@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "logcheck"
+version = "2.0.0"
+description = "Finds sensitive data (card data, personal data, credentials and keys) written to log files"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Faizan Ali" }]
+dependencies = []  # the scanner itself uses the standard library only
+
+[project.optional-dependencies]
+excel = ["openpyxl>=3.1"]
+dev = ["openpyxl>=3.1", "pytest>=8"]
+
+[project.scripts]
+logcheck = "logcheck.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["logcheck*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
