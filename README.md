@@ -170,5 +170,15 @@ python -m pytest
 python -m evaluation.evaluate
 ```
 
+## Authorship
+
+- **Author:** Faizan Ali. Version 2.0 (November 2026) replaces version 1.x completely.
+- **Third-party:** none at runtime; the scanner uses the Python standard library. Optional: openpyxl (MIT) for
+  Excel reports, and pytest for the tests.
+
+## License
+
+[MIT](LICENSE) © 2026 Faizan Ali.
+
 > Only scan logs you are authorised to access. Treat reports as sensitive: even masked evidence shows
 > where sensitive data is logged.
