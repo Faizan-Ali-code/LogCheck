@@ -159,11 +159,5 @@ logcheck.example.toml   every setting with its default
 run.bat                 runs LogCheck (creates .venv on the first run)
 ```
 
-## Authorship
-
-- **Author:** Faizan Ali. Version 2.0 (November 2026) replaces version 1.x completely.
-- **Third-party:** none at runtime; the scanner uses the Python standard library. Optional: openpyxl (MIT) for
-  Excel reports.
-
 > Only scan logs you are authorised to access. Treat reports as sensitive: even masked evidence shows
 > where sensitive data is logged.
