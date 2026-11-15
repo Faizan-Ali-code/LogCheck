@@ -4,7 +4,7 @@ What is sent per finding: the detector's name, the value's *format* (``Aaaaaa9*`
 window with every value-like part replaced by its format (see redaction.py). Card findings are never
 sent. The verdict is shown in a separate column and never removes or changes a finding.
 
-Its effect on precision has not been measured (docs/EVALUATION.md explains how to measure it), so it
+Its effect on precision has not been measured, so it
 is off by default and reported as experimental.
 """
 

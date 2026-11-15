@@ -26,7 +26,7 @@ Report: C:\demo\report\findings.csv
 Report: C:\demo\report\findings.json
 ```
 
-(These demo logs come from the evaluation corpus, so they also hold its traps. Three of the four card
+(These demo logs were generated with planted values and deliberate false-positive traps. Three of the four card
 numbers are random 16-digit order IDs that happen to pass the Luhn and card range checks. All four card
 findings are *medium* confidence, because no card keyword is on their lines. A BIN list would separate
 them.)
@@ -45,7 +45,7 @@ them.)
 - **Confidence on every finding.** High, medium or low, with the reason (for example `Visa, 16 digits,
   Luhn valid`, or `published test card number`).
 
-The 18 detectors, their rules and their known gaps are described in [docs/DETECTORS.md](docs/DETECTORS.md).
+`python -m logcheck detectors` lists the 18 detectors with their severities.
 
 ## Measured, not claimed
 
@@ -53,9 +53,8 @@ On a generated corpus of 6,970 log lines (485 planted values, 485 lines built to
 positives), LogCheck finds every planted value with a precision of 0.996. A naive scanner of the usual
 kind reaches 0.26–0.66 precision and 0.46–0.78 recall on the same lines.
 
-The corpus is synthetic and written by the same person as the rules, so these are upper bounds.
-[docs/EVALUATION.md](docs/EVALUATION.md) gives the method, the full results, throughput and these
-limits. The numbers are re-checked by the tests.
+The corpus is synthetic and written by the same person as the rules, so these are upper bounds, not
+real-world accuracy. Throughput is about 1.5 MB/s per process, and files are scanned in parallel.
 
 ## Safe to run on production logs
 
@@ -142,8 +141,7 @@ summary.
 - **What is never sent:** card data, in any form.
 - **What it changes:** the verdict goes into its own column and never removes or changes a finding.
 - **Limits:** calls are capped (`max_calls`, default 50), and AI triage stops after repeated errors.
-- **Status:** its accuracy has not been measured (see [docs/EVALUATION.md](docs/EVALUATION.md)), so treat
-  it as experimental. Check that your organisation allows log excerpts to be sent to an external
+- **Status:** its accuracy has not been measured, so treat it as experimental. Check that your organisation allows log excerpts to be sent to an external
   service.
 
 ## Project structure
@@ -157,28 +155,15 @@ logcheck/
   cards.py         BIN list and PAN hash list
   report.py        CSV / JSON / Excel reports and the console summary
   ai/              optional AI triage and the redaction it relies on
-evaluation/        labelled corpus generator, baseline, evaluation and benchmark
-docs/              DETECTORS.md, EVALUATION.md
-tests/             pytest suite
-```
-
-## Development
-
-```
-pip install -r requirements-dev.txt
-python -m pytest
-python -m evaluation.evaluate
+logcheck.example.toml   every setting with its default
+run.bat                 runs LogCheck (creates .venv on the first run)
 ```
 
 ## Authorship
 
 - **Author:** Faizan Ali. Version 2.0 (November 2026) replaces version 1.x completely.
 - **Third-party:** none at runtime; the scanner uses the Python standard library. Optional: openpyxl (MIT) for
-  Excel reports, and pytest for the tests.
-
-## License
-
-[MIT](LICENSE) © 2026 Faizan Ali.
+  Excel reports.
 
 > Only scan logs you are authorised to access. Treat reports as sensitive: even masked evidence shows
 > where sensitive data is logged.

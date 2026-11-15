@@ -1,6 +1,6 @@
 """What LogCheck looks for. Each detector finds candidates with a pattern and then validates them.
 
-Design rules (the reasoning per detector is in docs/DETECTORS.md):
+Design rules:
 - Numbers are only reported when they pass the relevant check (Luhn, IIN ranges, IBAN mod 97,
   ABA checksum, SSA rules), and digit runs must stand alone: a candidate inside a longer number is
   never reported.
